@@ -1,0 +1,154 @@
+			+--------------------+
+			| Infra de Software  |
+			| PROJETO 1: THREADS |
+			+--------------------+
+				   
+---- PRELIMINARIES ----
+
+>> Caso tenha algum comentário inicial sobre sua submissão, notas aos
+>> monitores, escreva a seguir
+
+Obrigado por existirem, monitores.
+OBS: todas as linhas de código estão explicadas no mod_pbgf.c e mod_pbgf.h
+
+>> Favor mencionar qualquer fonte online ou offline consultada durante a
+>> preparação de sua submissão, além do material disponibilizado no Classroom,
+>> aulas, referências da disciplina e indicações dos monitores
+
+ https://www.youtube.com/watch?v=myO2bs5LMak&ab_channel=EE415%3AIntro.toOperatingSystem	}ótimos links
+ https://jeason.gitbooks.io/pintos-reference-guide-sysu/content/list.html
+ https://jeason.gitbooks.io/pintos-reference-guide-sysu/content/Threads.html
+ https://jeason.gitbooks.io/pintos-reference-guide-sysu/content/synchronization.html		
+ https://jeason.gitbooks.io/pintos-reference-guide-sysu/content/Debugging-tools-guide.html	}
+ https://www.youtube.com/watch?v=XWVjd1hk3Is&t=2101s&ab_channel=FarshadGhanei
+ https://www.ccs.neu.edu/home/skotthe/classes/cs5600/fall/2015/notes/pintos-project1.pdf
+
+			     ALARM CLOCK
+			     ===========
+
+---- Estrutura de Dados ----
+
+>> A1: Copie aqui a declaração de cada nova ou alterada: 'struct', membro de 'struct',
+>> variável global ou estática, typedef, enumeration. Apresente a motivação para 
+>> cada uma em no máximo 25 palavras 
+
+static struct list sleep_list; 
+É uma struct do tipo list que irá guardar as threads que estão no estado sleep. Ela é estática pois vai ser modificada globalmente. Localização: thread.c
+
+adicionei também uma variavel na struct thread chamada wake_time do tipo signed long int que é de 64 bits. Ela irá guardar o numero de ticks que vai servir para tirar a thread da sleep_list
+
+void thread_sleep(int64_t ticks); função declarada na thread.h  função para fazer a thread ser bloqueada indo para lista de sleep
+void thread_wakeup(int64_t ticks); função declarada na thread.h  função para fazer a thread sair da lista de sleep e ir para lista de ready
+
+enum intr_level previus_interrup; variavel do tipo intr_level para guardar depois o estado da interrupção
+struct thread *cur = thread_current();             //cur vai ser um ponteiro do tipo struct thread que vau receber a thread atual
+
+list_init (&sleep_list); declaração da sleep_list
+
+---- Algoritmos ----
+
+>> A2: Descreva sucintamente o que acontece na chamada timer_sleep(),
+>> incluindo os efeitos do manipulador de interrupcão.
+em resumo ela desabilita a interrupção, testa se não é a idle thread, tira a thread da ready_list e coloca na sleep_list, e troca o estado dela para bloqueada
+
+>> A3: Que ações são tomadas para minimizar o temp gasto no manipulador de interrupção?
+ele só desliga a interrupção e liga denovo
+
+---- Sincronização ----
+
+>> A4: Como as condições de corrida são evitadas quando múltiplas chamadas de thread
+>> timer_sleep() ocorrem simultaneamente?
+são evitadas desligando as interrupções
+
+Eu chamo o comando previus_interrup = intr_disable(); que vai desligar a interrupção atribuindo a previus_interrup e nivel de interrupção anterior
+
+>> A5: Como as condições de corrida evitam que uma interrupção de tempo ocorra
+>> durante a chamada de timer_sleep()?
+são evitadas pois é feito um teste se a interrupção está ligada antes da chamada da função
+
+
+
+---- Racionalização ----
+
+>> A6: Por que você escolheu essa abordagem? Por que ela seria superior a outra abordagem?
+pois foi a lógica que eu vi que é a mais facil de implementar. Não pensei em outra abordagem, eu fiz ela pois o vídeo que eu segui foi muito claro.
+infelizmente foi muita coisa e eu tive que seguir um vídeo.
+
+			 PRIORITY SCHEDULING
+			 ===================
+
+---- Estrutura de Dados ----
+
+>> B1: Copie aqui a declaração de cada nova ou alterada: 'struct', membro de 'struct',
+>> variável global ou estática, typedef, enumeration. Apresente a motivação para 
+>> cada uma em no máximo 25 palavras 
+
+
+>> B2: Explique a estrutura de dados usadas para controlar a doação de prioridades.
+>> Use arte ASCII art para diagramar a doação encadeada.
+
+---- Algoritmos ----
+
+>> B3: Como você garantiu que a thread em espera de maior prioridade esperando por
+>> um lock, semáforo, ou variável condicional acordou primeiro?
+
+>> B4: Descreva a sequência de eventos quando uma chamada para lock_acquire()
+>> causa uma doação de prioridade. Como a doação encadeada é tratada?
+
+>> B5: Descreva a sequência de eventos quando lock_release() é chamada em um lock
+>> que a thread de maior prioridade esta esperando.
+
+---- Sincronização ----
+
+>> B6: Descreva a condição de corrida em thread_set_priority() e explique 
+>> como sua implementação evita isso. Você pode utilizar um lock para evitar essa 
+>> corrida?
+
+---- Racionalização ----
+
+>> B7: Por que você escolheu essa abordagem? Por que ela seria superior a outra abordagem?
+
+
+			   Questões de Pesquisa
+			   ====================
+
+As seguintes questões são opcionais, mais irá ajudar a melhorar o curso para turmas futuras.
+Sinta-se a vontade para nos contar o que quiser - as questões são apenas um guia.
+
+>> Na sua opinião, essa atividade, ou uma parte específica, foi muito fácil ou muito difícil?
+
+MUITO DIFICIL, não é por parte da resolução, pois, acho que trabalhar como PintOs irá ajudar muito,
+foi na parte de entender o como o PintOs funciona e entender melhor a linguagem C.
+Acho que se o PintOs fosse trabalhado em sala de Aula, seria MUITO mais facil e menos frustrante.
+Eu me senti muito mal pois foi muita informação caindo de uma vez só e para eu resolver dentro de 5 dias tendo mais duas questões
+e também outras provas pra eu fazer. Eu só precisei ajustar algumas coisas nas outras, essa que eu fiz do zero.
+
+>> Você gastou muito ou pouco tempo?
+Muito, pois não sabia de nada do PintOs e não domino muito a linguagem C. Tive que deixar de estudar pras outras provas para tentar resolver essa questão.
+
+>> Você acredita que essa atividade me particular contribuiu para o seu entendimento do design
+>> de um sistema operacional?
+
+MUITO, MUITO MESMO. Como eu aprendo fazendo, acho que deveria ter uma Infraestrutura de Sofware 2, só com PintOs e a um ficaria para parte teórica.
+Acho que com o PintOS a gente aprende na prática como solucionar problemas de SO.
+Espero que o PintOS seja utilizado mais vezes, e não só isso, que ele seja utilizado por completo, por exemplo, no contexto da memória virtual.
+
+>> Há algum fato em particular ou dica que deveríamos dar aos estudantes dos próximos semestres
+>> para ajudá-los a resolver os problemas? Por outro lado, você achou que alguma de nossas dicas ou
+>> sugestões confundiu mais do que ajudou?
+
+Sim, dizer aos alunos que foquem nessa disciplina e obedeçam tio Erico que ele sabe de tudo. Mas tio Erico também pode aliviar mais e pensar que também tem outras disciplinas.
+Poderia ter uma disciplina só pra PINT-OS. Ou algo parecido, não sei. Motivo: O aluno vai aprender na Prática e vai ver que ele está modificando um SO.
+Pra ser sincero eu li por cima a dica de vocês e pesquisei mais como resolver esse problema. 
+Assisti esse vídeo que foi por onde eu fiz: https://www.youtube.com/watch?v=myO2bs5LMak&ab_channel=EE415%3AIntro.toOperatingSystem
+
+>> Você teria sugestões para os monitores proporcionarem uma ajuda mais eficiente aos estudantes,
+>> seja para os projetos restantes ou para os próximos semestres?
+
+Não fui muito a monitoria no primeiro semestre mas no segundo eu fui muito. Acho que enfatizar aos alunos que a monitoria é importante pra tirarem suas duvidas.
+
+>> Algum outro comentário?
+
+Tio Erico, eu adoro sua abordagem e acho que o senhor é realmente um PROFESSOR que forma as melhores turmas, 
+mas acho que essa questão do PINTOS deveria ser vista em uma disciplina no quarto periodo ou então dar atenção em sala de aula (Explicar como o PintOS funciona, etc).
+E ser trabalhada desde o começo do período. Pois sobrecarrega muito.
